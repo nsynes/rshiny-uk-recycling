@@ -27,7 +27,7 @@ regionPal <- c('#41ab5d','#006d2c','#f7fcf5','#e5f5e0','#00441b','#a1d99b','#238
 
 
 ui <- fluidPage(
-  radioButtons(inputId = "Year", label = "Select Year", choices = unique(dfRegion$Financial.Year), selected='2017-18', inline=TRUE),
+  radioButtons(inputId = "Year", label = "Select Year", choices = unique(dfRegion$Financial.Year), selected='2017-18', inline=TRUE, width='100%'),
   plotlyOutput(outputId = "region"),
   plotlyOutput(outputId = "local")
 )
@@ -37,6 +37,10 @@ server <- function(input, output, session) {
     region = 'London',
     pal = c(regionPal[1:2],regionPal[4:9])
   )
+  
+  observeEvent('click_region', {
+    print('clicked')
+  })
   
   observeEvent(event_data("plotly_click"), {
     d <- event_data("plotly_click")
@@ -77,10 +81,18 @@ server <- function(input, output, session) {
                   )
                 ),
                 showlegend = F) %>%
-                layout(title=sprintf('<b>UK Region Recycling Rates (%s)</b>', input$Year),
+                layout(
+                  margin = list(
+                    l = 50,
+                    r = 50,
+                    b = 100,
+                    t = 100,
+                    pad = 4
+                  ),
+                  title=sprintf('<b>UK Region Recycling Rates (%s)</b>', input$Year),
                        xaxis = list(title = ''),
                        yaxis = list(title = 'Recycling Rate (%)')
-                )
+                ) %>% config(displayModeBar = F)
   })
   
   output$local <- renderPlotly({
@@ -100,10 +112,18 @@ server <- function(input, output, session) {
                   reversescale=TRUE
                 ),
                 hovertemplate = '<i>%{x}</i>: %{y:.1f}%') %>%
-                layout(title=sprintf('<b>%s Recycling Rates by Local Authority (%s)</b>', rv$region, input$Year),
+                layout(
+                  margin = list(
+                    l = 50,
+                    r = 50,
+                    b = 100,
+                    t = 100,
+                    pad = 4
+                  ),
+                  title=sprintf('<b>%s Recycling Rates by Local Authority (%s)</b>', rv$region, input$Year),
                        xaxis = list(title = ''),
                        yaxis = list(title = 'Recycling rate (%)')
-                )
+                ) %>% config(displayModeBar = F)
   })
   
 }
